@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<head>
+    <title>test changer</title>
+    <script type="text/javascript">
+        //@ts-check
+        /**
+         * @param {string} filename
+         * @param {string} data
+         */
+        function keydownload(filename, data){
+            const blob = new Blob([data], {type: 'text/plain'})
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement("a")
+            document.body.appendChild(a)
+            a.download = filename
+            a.href = url
+            a.click()
+            a.remove()
+            URL.revokeObjectURL(url)
+        }
+        /**
+         * @param {string} data
+         * @param {string} key
+         * @return {string}
+         */
+        function returning(data, key){
+            //let beforedata = data.split('')
+            let beforedata = [...data]
+            let keydata = key.split(',').map(x => Number(x))
+            let afterdata = []
+            let count = 0
+            let returndata = []
+            for(let n = 0; n < beforedata.length; n++){
+                if(!(/^[A-Za-z]+$/.test(beforedata[n]))){
+                    afterdata[n] = Math.abs(/** @type {number}*/(beforedata[n].codePointAt(0)) - keydata[count])
+                    returndata[n] = String.fromCodePoint(/** */afterdata[n])
+                    count++
+                }
+            }
+            return returndata.join('')
+        }
+        /**
+         * @param {string} data
+         */
+        function randomize(data){
+            let afterdata = [...data]
+            /** @type {number[]}*/
+            let key = []
+            let randomnum = 0
+            for (let n = 0; n < data.length; n++){
+                do{
+                    randomnum = Math.floor(Math.random() * 557054)
+                }while(32 >= randomnum && randomnum >= 127)
+                afterdata[n] = String.fromCodePoint(/** @type {number}*/(afterdata[n].codePointAt(0)) + randomnum)
+                key[n] = randomnum
+            }
+            let temparray = ''
+            afterdata.forEach(element => {
+                if (Math.floor(Math.random() * 10) % 2 == 0) {
+                    temparray += getRandomAlphabet()
+                }
+            temparray += element
+            })
+            const returndata = {temparray:temparray, key:key.join()}
+            return returndata
+        }
+        /**
+         * @return {string}
+         */
+        function getRandomAlphabet() {
+            const alphabets = 'abcdefghijklmnopqrstuvwxyz';
+            const randomIndex = Math.floor(Math.random() * alphabets.length)
+            return alphabets[randomIndex]
+        }
+        /**
+         * @param {string} move changeテキストbox
+         */
+        function keyandbodyfunc(move){
+            const data = /** @type {HTMLInputElement} */(document.getElementById('beforechange')).value
+            if(move == "down"){
+                const afterchanged = randomize(data)
+                keydownload('body', afterchanged.afterdata)
+                keydownload('key', afterchanged.key)
+            }
+            else if(move == "up"){
+                const key = /** @type {HTMLInputElement} */(document.getElementById('keypos')).value
+                const afterchanged = returning(data, key)
+                keydownload('returnbody', afterchanged)
+            }
+        }
+        window.addEventListener('DOMContentLoaded', () => {
+            //alert('HTML5以降のブラウザ対応です。')
+            //@ts-ignore
+            document.getElementById('changebutton').addEventListener('click', () => {
+                /** @type {HTMLElement}*/(document.getElementById('keybtn')).innerHTML = '<input type = "button" value = "download" onclick = "keyandbodyfunc(\'down\');">'
+            })
+            //@ts-ignore
+            document.getElementById('returnbutton').addEventListener('click', () => {
+                /** @type {HTMLElement} */(document.getElementById('keybtn')).innerHTML = '<input type = "text" placeholder = "copy and past your key" id = "keypos"><br><input type = "button" value = "upload" onclick = "keyandbodyfunc(\'up\');">'
+            })
+        })
+        
+    </script>
+</head>
+<body>
+    <center>
+        <input type = "text" placeholder = "type or copy and paste your sentence" id = "beforechange" style="width:99%; height:100px;">
+        <br>
+        <input type = "button" id = "changebutton" style = "width:44%; height:10%;" value = "change!">
+        <input type = "button" id = "returnbutton" style = "width:44%; height:10%;" value = "return!"> 
+        <br><br>
+        <div id = "keybtn"></div>
+    </center>
+</body>

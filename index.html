@@ -79,7 +79,7 @@
             const data = /** @type {HTMLInputElement} */(document.getElementById('beforechange')).value
             if(move == "down"){
                 const afterchanged = randomize(data)
-                keydownload('body', afterchanged.afterdata)
+                keydownload('body', afterchanged.temparray)
                 keydownload('key', afterchanged.key)
             }
             else if(move == "up"){
